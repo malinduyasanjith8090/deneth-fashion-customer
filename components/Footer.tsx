@@ -66,7 +66,7 @@ export const Footer: React.FC<FooterProps> = ({ changeView }) => {
               </li>
               <li className="flex items-center space-x-2">
                 <MessageCircle className="w-4 h-4" />
-                <a href="https://wa.me/254740716403" target="_blank" rel="noreferrer" className="hover:text-white">WhatsApp Us</a>
+                <a href="https://wa.me/94765399868" target="_blank" rel="noreferrer" className="hover:text-white">WhatsApp Us</a>
               </li>
               <li className="flex items-center space-x-2">
                  <Mail className="w-4 h-4" />
@@ -80,13 +80,13 @@ export const Footer: React.FC<FooterProps> = ({ changeView }) => {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="text-sm font-semibold uppercase tracking-wider mb-6">Connect With Us</h4>
             <div className="flex space-x-4 mb-8">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
-              <a href="https://tiktok.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors font-bold text-sm border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center">T</a>
-              <a href="https://wa.me/254740716403" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors"><MessageCircle className="w-5 h-5" /></a>
+              <a href="https://web.facebook.com/DenethFashion/" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
+              <a href="https://www.instagram.com/denethfashion?igsh=MXBwcG8yb3prcm84YQ%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
+              <a href="https://www.tiktok.com/@denethfashion?_r=1&_t=ZS-93YYzJHInf2" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors font-bold text-sm border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center">T</a>
+              <a href="https://wa.me/94765399868" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors"><MessageCircle className="w-5 h-5" /></a>
             </div>
             <div className="bg-white p-2 rounded-lg">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://denethfashion.mobirisesite.com" alt="Scan Me" className="w-24 h-24" />
+                <img src="https://web.facebook.com/DenethFashion/" alt="Scan Me" className="w-24 h-24" />
             </div>
             <p className="text-[10px] mt-2 text-gray-500 uppercase tracking-widest">Scan Me</p>
           </div>

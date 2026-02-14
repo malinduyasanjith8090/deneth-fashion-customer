@@ -1,6 +1,6 @@
 import { Product } from './types';
 
-export const WHATSAPP_NUMBER = '94740716403'; // Updated to Sri Lanka country code
+export const WHATSAPP_NUMBER = '94765399868'; // Updated to Sri Lanka country code
 
 // Helper to generate a gallery based on the main image + some generic texture/lifestyle shots
 const createGallery = (mainImage: string) => [

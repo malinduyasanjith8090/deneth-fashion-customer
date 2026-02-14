@@ -107,7 +107,7 @@ export const ChatBot: React.FC = () => {
                 <Sparkles className="w-4 h-4 text-yellow-300" />
               </div>
               <div>
-                <h3 className="font-serif font-bold tracking-wide text-sm">Deneth AI</h3>
+                <h3 className="font-serif font-bold tracking-wide text-sm">Deneth Fashion</h3>
                 <span className="text-[10px] text-gray-300 flex items-center">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 animate-pulse"></span>
                   Online

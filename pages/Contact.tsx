@@ -36,7 +36,7 @@ export const Contact: React.FC = () => {
                    </div>
                    <div>
                       <h3 className="font-bold text-lg">Location</h3>
-                      <p className="text-gray-600 mt-1">Nairobi, Kenya</p>
+                      <p className="text-gray-600 mt-1">81/61, Pannaluwa, Wataraka, Padukka</p>
                       <p className="text-sm text-gray-400 mt-1">We deliver countrywide.</p>
                    </div>
                 </div>
@@ -49,7 +49,7 @@ export const Contact: React.FC = () => {
                       <h3 className="font-bold text-lg">WhatsApp</h3>
                       <p className="text-gray-600 mt-1">Chat with us directly for custom orders.</p>
                       <a 
-                        href="https://wa.me/254740716403" 
+                        href="https://wa.me/94765399868" 
                         target="_blank"
                         rel="noreferrer"
                         className="inline-block mt-2 text-green-700 font-bold underline underline-offset-4"
@@ -62,13 +62,13 @@ export const Contact: React.FC = () => {
                 <div className="pt-8">
                     <h3 className="font-bold mb-4">Follow @DenethFashion</h3>
                     <div className="flex space-x-4">
-                        <a href="https://instagram.com" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
+                        <a href="https://www.instagram.com/denethfashion?igsh=MXBwcG8yb3prcm84YQ%3D%3D&utm_source=qr" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
                             <Instagram className="w-5 h-5" />
                         </a>
-                        <a href="https://facebook.com" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
+                        <a href="https://web.facebook.com/DenethFashion/" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all">
                             <Facebook className="w-5 h-5" />
                         </a>
-                        <a href="https://tiktok.com" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all font-bold">
+                        <a href="https://www.tiktok.com/@denethfashion?_r=1&_t=ZS-93YYzJHInf2" className="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition-all font-bold">
                             T
                         </a>
                     </div>
