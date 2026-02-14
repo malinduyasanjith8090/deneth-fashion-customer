@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, changeView }) => {
 
           {/* Icons */}
           <div className="flex items-center space-x-6">
-            <a href="https://wa.me/254740716403" target="_blank" rel="noreferrer" className="hidden md:block text-gray-800 hover:text-black transition-colors">
+            <a href="https://wa.me/94765399868" target="_blank" rel="noreferrer" className="hidden md:block text-gray-800 hover:text-black transition-colors">
               <Phone className="w-5 h-5" />
             </a>
             <button 
