@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { WHATSAPP_NUMBER } from '../constants';
-import { MessageCircle, CreditCard, Lock, ArrowLeft, Truck, MapPin, CheckCircle, ShoppingBag, Calendar, FileText, Package, QrCode } from 'lucide-react';
+import { MessageCircle, CreditCard, Lock, ArrowLeft, Truck, MapPin, CheckCircle, ShoppingBag, Calendar, FileText, Package, QrCode, User } from 'lucide-react';
 import { ViewState, CartItem } from '../types';
 
 interface CheckoutProps {
@@ -68,6 +68,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'solo'>('cod');
   const [deliveryFee, setDeliveryFee] = useState(250);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [soloOrderReference, setSoloOrderReference] = useState('');
   
   // Order Confirmation State
   const [orderComplete, setOrderComplete] = useState(false);
@@ -95,6 +96,9 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
     }
 
     if (paymentMethod === 'solo') {
+      // Generate SOLO order reference
+      const soloRef = `SOLO-${Math.floor(1000 + Math.random() * 9000)}`;
+      setSoloOrderReference(soloRef);
       setShowQRModal(true);
       return;
     }
@@ -168,10 +172,10 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
 
     setOrderDetails(details);
 
-    // Construct WhatsApp Message for SOLO payment
+    // Construct WhatsApp Message for SOLO payment with order reference
     const itemsList = cart.map(item => `- ${item.name} (${item.selectedSize}, ${item.selectedColor}) x${item.quantity}`).join('%0A');
     
-    const message = `*New Order (SOLO Payment): ${orderNum}*%0A%0A*Customer:* ${formData.firstName} ${formData.lastName}%0A*Phone:* ${formData.phone}%0A*Address:* ${formData.address}, ${formData.city}, ${formData.district}%0A%0A*Order Details:*%0A${itemsList}%0A%0A*Subtotal:* Rs. ${cartTotal.toLocaleString()}%0A*Delivery (${formData.district}):* Rs. ${deliveryFee}%0A*Total Amount:* Rs. ${grandTotal.toLocaleString()}%0A%0A*Payment Method:* SOLO App (Payment Pending Confirmation)`;
+    const message = `*New Order (SOLO Payment): ${orderNum}*%0A%0A*Customer:* ${formData.firstName} ${formData.lastName}%0A*Phone:* ${formData.phone}%0A*Address:* ${formData.address}, ${formData.city}, ${formData.district}%0A%0A*Order Details:*%0A${itemsList}%0A%0A*Subtotal:* Rs. ${cartTotal.toLocaleString()}%0A*Delivery (${formData.district}):* Rs. ${deliveryFee}%0A*Total Amount:* Rs. ${grandTotal.toLocaleString()}%0A%0A*Payment Method:* SOLO App%0A*SOLO Reference:* ${soloOrderReference}%0A*Status:* Payment Pending Confirmation`;
     
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     
@@ -188,6 +192,8 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
   const QRModal = () => {
     if (!showQRModal) return null;
     
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim() || 'Customer';
+    
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
         <div className="bg-white rounded-lg max-w-md w-full p-8 relative animate-slide-up">
@@ -202,34 +208,39 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
           
           <div className="text-center mb-6">
             <h3 className="text-2xl font-serif font-bold mb-2">Scan to Pay</h3>
-            <p className="text-gray-500 text-sm">Use SOLO app to scan this QR code</p>
+            <p className="text-gray-500 text-sm">Use SOLO app to scan this QR code or Screenshot and upload it</p>
+          </div>
+          
+          {/* Customer Info */}
+          <div className="bg-blue-50 p-4 rounded-lg mb-4 flex items-center space-x-3">
+            <User className="w-5 h-5 text-blue-600" />
+            <div>
+              <p className="text-sm text-gray-600">Customer</p>
+              <p className="font-bold text-gray-900">{fullName}</p>
+            </div>
           </div>
           
           {/* QR Code Image */}
-          <div className="bg-white p-4 rounded-lg border-2 border-gray-200 mb-6 flex justify-center">
+          <div className="bg-white p-4 rounded-lg border-2 border-gray-200 mb-4 flex justify-center">
             <div className="w-64 h-64 bg-gray-100 flex items-center justify-center">
               {/* Replace this with your actual QR code image */}
               <img 
-                src="/api/placeholder/250/250" 
+                src="/qrcode/qrcode.jpeg" 
                 alt="SOLO Pay QR Code" 
                 className="w-full h-full object-contain"
               />
-              {/* <div className="text-center text-gray-400">
-                <QrCode className="w-16 h-16 mx-auto mb-2 text-gray-300" />
-                <p className="text-xs">SOLO Pay QR Code</p>
-              </div> */}
             </div>
           </div>
           
           {/* Payment Details */}
-          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+          <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-600">Amount to Pay:</span>
               <span className="text-2xl font-bold text-gray-900">Rs. {grandTotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-500">Order Reference:</span>
-              <span className="font-mono bg-gray-200 px-2 py-1 rounded">SOLO-{Math.floor(1000 + Math.random() * 9000)}</span>
+              <span className="font-mono bg-gray-200 px-2 py-1 rounded font-bold">{soloOrderReference}</span>
             </div>
           </div>
           
@@ -246,6 +257,10 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
             <p className="flex items-start">
               <span className="font-bold mr-2">3.</span>
               Complete the payment and click "I've Paid"
+            </p>
+            <p className="flex items-start text-xs text-blue-600 mt-2">
+              <span className="font-bold mr-2">Note:</span>
+              Reference {soloOrderReference} will be included in your WhatsApp confirmation
             </p>
           </div>
           
@@ -265,7 +280,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
           </div>
           
           <p className="text-xs text-center text-gray-400 mt-4">
-            After payment, you'll be redirected to confirm your order via WhatsApp
+            After payment, you'll be redirected to confirm your order via WhatsApp with reference {soloOrderReference}
           </p>
         </div>
       </div>
