@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { WHATSAPP_NUMBER } from '../constants';
-import { MessageCircle, CreditCard, Lock, ArrowLeft, Truck, MapPin, CheckCircle, ShoppingBag, Calendar, FileText, Package } from 'lucide-react';
+import { MessageCircle, CreditCard, Lock, ArrowLeft, Truck, MapPin, CheckCircle, ShoppingBag, Calendar, FileText, Package, QrCode } from 'lucide-react';
 import { ViewState, CartItem } from '../types';
 
 interface CheckoutProps {
@@ -65,8 +65,9 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
     district: 'Colombo 1-15',
     email: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'solo'>('cod');
   const [deliveryFee, setDeliveryFee] = useState(250);
+  const [showQRModal, setShowQRModal] = useState(false);
   
   // Order Confirmation State
   const [orderComplete, setOrderComplete] = useState(false);
@@ -93,8 +94,17 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
       return;
     }
 
+    if (paymentMethod === 'solo') {
+      setShowQRModal(true);
+      return;
+    }
+
     if (paymentMethod === 'card') return; 
 
+    processCODOrder();
+  };
+
+  const processCODOrder = () => {
     // Generate Order Details
     const orderNum = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
     const date = new Date();
@@ -131,6 +141,135 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
     clearCart();
     setOrderComplete(true);
     window.scrollTo(0, 0);
+  };
+
+  const handleSoloPayment = () => {
+    setShowQRModal(false);
+    
+    // Generate Order Details
+    const orderNum = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+    const date = new Date();
+    date.setDate(date.getDate() + 3);
+    const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+    const details: OrderDetails = {
+      orderNumber: orderNum,
+      deliveryDate: formattedDate,
+      items: [...cart],
+      subtotal: cartTotal,
+      deliveryFee: deliveryFee,
+      grandTotal: grandTotal,
+      customer: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        city: formData.city,
+        district: formData.district
+      }
+    };
+
+    setOrderDetails(details);
+
+    // Construct WhatsApp Message for SOLO payment
+    const itemsList = cart.map(item => `- ${item.name} (${item.selectedSize}, ${item.selectedColor}) x${item.quantity}`).join('%0A');
+    
+    const message = `*New Order (SOLO Payment): ${orderNum}*%0A%0A*Customer:* ${formData.firstName} ${formData.lastName}%0A*Phone:* ${formData.phone}%0A*Address:* ${formData.address}, ${formData.city}, ${formData.district}%0A%0A*Order Details:*%0A${itemsList}%0A%0A*Subtotal:* Rs. ${cartTotal.toLocaleString()}%0A*Delivery (${formData.district}):* Rs. ${deliveryFee}%0A*Total Amount:* Rs. ${grandTotal.toLocaleString()}%0A%0A*Payment Method:* SOLO App (Payment Pending Confirmation)`;
+    
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    
+    // Open WhatsApp
+    window.open(whatsappUrl, '_blank');
+    
+    // Clear cart and show success view
+    clearCart();
+    setOrderComplete(true);
+    window.scrollTo(0, 0);
+  };
+
+  // --- QR Code Modal ---
+  const QRModal = () => {
+    if (!showQRModal) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+        <div className="bg-white rounded-lg max-w-md w-full p-8 relative animate-slide-up">
+          <button 
+            onClick={() => setShowQRModal(false)}
+            className="absolute top-4 right-4 text-gray-400 hover:text-black"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-serif font-bold mb-2">Scan to Pay</h3>
+            <p className="text-gray-500 text-sm">Use SOLO app to scan this QR code</p>
+          </div>
+          
+          {/* QR Code Image */}
+          <div className="bg-white p-4 rounded-lg border-2 border-gray-200 mb-6 flex justify-center">
+            <div className="w-64 h-64 bg-gray-100 flex items-center justify-center">
+              {/* Replace this with your actual QR code image */}
+              <img 
+                src="/api/placeholder/250/250" 
+                alt="SOLO Pay QR Code" 
+                className="w-full h-full object-contain"
+              />
+              {/* <div className="text-center text-gray-400">
+                <QrCode className="w-16 h-16 mx-auto mb-2 text-gray-300" />
+                <p className="text-xs">SOLO Pay QR Code</p>
+              </div> */}
+            </div>
+          </div>
+          
+          {/* Payment Details */}
+          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-gray-600">Amount to Pay:</span>
+              <span className="text-2xl font-bold text-gray-900">Rs. {grandTotal.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-gray-500">Order Reference:</span>
+              <span className="font-mono bg-gray-200 px-2 py-1 rounded">SOLO-{Math.floor(1000 + Math.random() * 9000)}</span>
+            </div>
+          </div>
+          
+          {/* Instructions */}
+          <div className="text-sm text-gray-500 mb-6 space-y-2">
+            <p className="flex items-start">
+              <span className="font-bold mr-2">1.</span>
+              Open SOLO app on your phone
+            </p>
+            <p className="flex items-start">
+              <span className="font-bold mr-2">2.</span>
+              Tap on "Scan & Pay" and scan this QR code
+            </p>
+            <p className="flex items-start">
+              <span className="font-bold mr-2">3.</span>
+              Complete the payment and click "I've Paid"
+            </p>
+          </div>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowQRModal(false)}
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSoloPayment}
+              className="flex-1 bg-black text-white px-4 py-3 rounded-md font-bold hover:bg-gray-800 transition-colors"
+            >
+              I've Paid
+            </button>
+          </div>
+          
+          <p className="text-xs text-center text-gray-400 mt-4">
+            After payment, you'll be redirected to confirm your order via WhatsApp
+          </p>
+        </div>
+      </div>
+    );
   };
 
   // --- Order Confirmation View ---
@@ -250,6 +389,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
   // --- Checkout Form View ---
   return (
     <div className="bg-gray-50 min-h-screen pt-8 pb-20 animate-fade-in">
+      <QRModal />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb / Back */}
@@ -421,6 +561,33 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
                            </div>
                         </div>
 
+                        {/* SOLO App Payment */}
+                        <div 
+                           onClick={() => setPaymentMethod('solo')}
+                           className={`relative flex items-start p-5 rounded-lg border cursor-pointer transition-all duration-200 ${paymentMethod === 'solo' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-gray-300'}`}
+                        >
+                           <div className="flex items-center h-5">
+                             <input 
+                               type="radio" 
+                               name="payment" 
+                               value="solo" 
+                               checked={paymentMethod === 'solo'}
+                               onChange={() => setPaymentMethod('solo')}
+                               className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                             />
+                           </div>
+                           <div className="ml-4 flex-1">
+                             <div className="flex justify-between items-center mb-1">
+                                <div className="flex items-center">
+                                    <label className="font-bold text-gray-900 cursor-pointer">SOLO App Payment</label>
+                                    <span className="ml-2 text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">New</span>
+                                </div>
+                                <QrCode className="w-5 h-5 text-blue-600" />
+                             </div>
+                             <p className="text-sm text-gray-500">Pay instantly using SOLO app. Scan QR code and complete payment.</p>
+                           </div>
+                        </div>
+
                         {/* Credit Card (Disabled) */}
                         <div className="relative flex items-start p-5 rounded-lg border border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed">
                            <div className="flex items-center h-5">
@@ -510,7 +677,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ changeView }) => {
                     
                     <div className="mt-6 flex items-center justify-center space-x-2 text-[10px] text-gray-400 uppercase tracking-wider">
                         <Lock className="w-3 h-3" />
-                        <span>Secure Checkout via WhatsApp</span>
+                        <span>Secure Checkout via {paymentMethod === 'solo' ? 'SOLO App' : 'WhatsApp'}</span>
                     </div>
                 </div>
             </div>
